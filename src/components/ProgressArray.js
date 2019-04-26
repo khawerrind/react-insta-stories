@@ -17,6 +17,7 @@ export default class ProgressArray extends React.Component {
             active={i === this.props.progress.id ? 1 : (i < this.props.progress.id ? 2 : 0)}
             pause={this.props.pause}
             bufferAction={this.props.bufferAction}
+            currentGroupId={this.props.currentGroupId}
           />)}
       </div>
     )
@@ -50,5 +51,6 @@ ProgressArray.propTypes = {
   ]),
   defaultInterval: PropTypes.number,
   videoDuration: PropTypes.number,
-  bufferAction: PropTypes.bool
+  bufferAction: PropTypes.bool,
+  currentGroupId: PropTypes.number
 }

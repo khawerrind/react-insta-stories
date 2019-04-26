@@ -77,5 +77,6 @@ Progress.propTypes = {
     PropTypes.object
   ]),
   videoDuration: PropTypes.number,
-  bufferAction: PropTypes.bool
+  bufferAction: PropTypes.bool,
+  currentGroupId: PropTypes.number
 }

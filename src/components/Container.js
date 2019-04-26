@@ -206,6 +206,7 @@ export default class Container extends React.Component {
     return (
       <div style={{...styles.container, ...{width: this.width, height: this.height}}}>
         <ProgressArray
+          currentGroupId={this.state.currentGroupId}
           next={this.next}
           pause={this.state.pause}
           bufferAction={this.state.bufferAction}
