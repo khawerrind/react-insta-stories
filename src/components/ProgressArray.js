@@ -4,7 +4,6 @@ import PropTypes from 'prop-types'
 
 export default class ProgressArray extends React.Component {
   render() {
-    console.log("this.props.pause", this.props.pause)
     return (
       <div style={styles.progressArr}>
         {this.props.length.map((i, index) =>

@@ -25,10 +25,6 @@ export default class Story extends React.Component {
       if (this.props.story.type === 'text') {
         this.imageLoaded()
       } else {
-        this.pauseId && clearTimeout(this.pauseId)
-        this.pauseId = setTimeout(() => {
-          this.setState({loaded: false})
-        }, 300)
         this.props.action('pause', true)
       }
       this.vid && this.vid.addEventListener('waiting', () => {
@@ -48,7 +44,6 @@ export default class Story extends React.Component {
   }
   imageLoaded = () => {
     try {
-      if (this.pauseId) clearTimeout(this.pauseId)
       this.setState({loaded: true})
       this.props.action('play', true)
       if (this.props.onStoryView) {

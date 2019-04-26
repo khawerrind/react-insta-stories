@@ -132,7 +132,7 @@ export default class Container extends React.Component {
   }
 
   debouncePause = (e) => {
-    e.preventDefault()
+    //e.preventDefault()
     if (this.props.doPause) {
       return
     }
@@ -142,7 +142,7 @@ export default class Container extends React.Component {
   }
 
   mouseUp = (e, type) => {
-    e.preventDefault()
+    //e.preventDefault()
     if (this.props.doPause) {
       return
     }
@@ -228,10 +228,10 @@ export default class Container extends React.Component {
           onStoryView={this.props.onStoryView}
           onStoryRender={this.props.onStoryRender}
         />
-        <div style={styles.overlay}>
+        {/*<div style={styles.overlay}>
           <div style={{width: this.width / 2, zIndex: 999}} onTouchStart={this.debouncePause} onTouchEnd={e => this.mouseUp(e, 'previous')} onMouseDown={this.debouncePause} onMouseUp={(e) => this.mouseUp(e, 'previous')} />
           <div style={{width: this.width / 2, zIndex: 999}} onTouchStart={this.debouncePause} onTouchEnd={e => this.mouseUp(e, 'next')} onMouseDown={this.debouncePause} onMouseUp={(e) => this.mouseUp(e, 'next')} />
-        </div>
+        </div>}*/}
         {this.props.showNextPrevButtons &&
           <span className={style.nextBtn} onTouchStart={this.debouncePause} onTouchEnd={e => this.mouseUp(e, 'next')} onMouseDown={this.debouncePause} onMouseUp={(e) => this.mouseUp(e, 'next')}><img src={up} /></span>
         }

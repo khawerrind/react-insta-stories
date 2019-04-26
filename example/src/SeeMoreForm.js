@@ -5,7 +5,7 @@ export default class SeeMoreForm extends React.Component {
     render() {
         return (
             <div>
-                <input type="text" />
+                <input type="text" onFocus={this.props.onFocus} onBlur={this.props.onBlur} />
             </div>
         )
     }
