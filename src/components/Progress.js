@@ -19,14 +19,18 @@ export default class Progress extends React.PureComponent {
   }
 
   static getDerivedStateFromProps(props, state) {
-    let current = props.currentStory
+    let current = props.currentStory;
+    let newState = {duration: props.defaultInterval};
+
     if (typeof current === 'object') {
-      if (current.type && current.type === 'video' && props.videoDuration) return { duration: props.videoDuration * 1000 }
-      if (current.duration) return { duration: current.duration }
-      return { duration: props.defaultInterval }
-    } else {
-      return { duration: props.defaultInterval }
+      if (current.type && current.type === 'video' && props.videoDuration) {
+        newState.duration = props.videoDuration * 1000;
+      } else if (current.duration) {
+        newState.duration = current.duration
+      }
     }
+
+    return newState;
   }
 
   next = () => {
