@@ -2,15 +2,22 @@ import React from 'react'
 import Story from './Story'
 import ProgressArray from './ProgressArray'
 import PropTypes from 'prop-types'
+import style from './../styles.css'
+import up from './../up.png'
+import mutedPng from './../muted.png'
+import unmutedPng from './../unmuted.png'
+import playPng from './../play.png'
+import pausePng from './../pause.png'
 
 export default class Container extends React.Component {
   constructor(props) {
     super(props)
     this.state = {
-      currentId: 0,
+      currentGroupId: this.props.startingGroupIndex ? this.props.startingGroupIndex : 0,
+      currentStoryId: this.props.startingStoryIndex ? this.props.startingStoryIndex : 0,
       pause: true,
       count: 0,
-      storiesDone: 0
+      muted: true
     }
     this.defaultInterval = 4000
     this.width = props.width || 360
@@ -19,19 +26,47 @@ export default class Container extends React.Component {
 
   componentDidMount() {
     this.props.defaultInterval && (this.defaultInterval = this.props.defaultInterval)
-    // this.start()
+    window.addEventListener("focus", this.onWindowFocus)
+    window.addEventListener("blur", this.onWindowBlur)
+
+    if (this.props.onGroupChange) {
+      this.props.onGroupChange(this.props.stories[this.state.currentGroupId].user)
+    }
   }
 
-  // start = async () => {
-  //   while (this.state.currentId < this.props.stories.length - 1) {
-  //     let curr = this.state.currentId + 1
-  //     this.setState({ currentId: curr })
-  //     let interval = this.props.stories[curr].duration
-  //     await this.wait(interval || this.defaultInterval).then(() => {
-  //       this.state.currentId < this.props.stories.length - 1 && this.setState({count: 0})
-  //     })
-  //   }
-  // }
+  componentWillUnmount() {
+    window.removeEventListener("focus", this.onWindowFocus)
+    window.removeEventListener("blur", this.onWindowBlur)
+  }
+
+  componentWillReceiveProps(nextProps) {
+    if (nextProps.doPause && !this.props.doPause) { //pause
+      this.mustPause();
+    } else if (!nextProps.doPause && this.props.doPause) { //play
+      this.mustPlay();
+    }
+  }
+
+  onWindowBlur = () => {
+    //pause
+    if (!this.state.pause) {
+      this.mousedownId = setTimeout(() => {
+        this.pause('pause')
+      }, 0)
+    }
+  }
+
+  onWindowFocus = () => {
+    if (this.props.doPause) {
+      return;
+    }
+
+    //play
+    if (this.state.pause) {
+      this.mousedownId && clearTimeout(this.mousedownId)
+      this.pause('play')
+    }
+  }
 
   wait = (time) => {
     return new Promise(resolve => {
@@ -54,25 +89,53 @@ export default class Container extends React.Component {
   }
 
   previous = () => {
-    if (this.state.currentId > 0) {
+    if (this.state.currentStoryId > 0) {
       this.setState({
-        currentId: this.state.currentId - 1,
+        currentStoryId: this.state.currentStoryId - 1,
         count: 0
       })
+    } else if (this.state.currentGroupId > 0) {
+      const newGroupId = this.state.currentGroupId - 1;
+      const stories = this.props.stories[newGroupId].stories;
+      this.setState({
+        currentGroupId: newGroupId,
+        currentStoryId: stories.length - 1,
+        count: 0
+      })
+      if (this.props.onGroupChange) {
+        this.props.onGroupChange(this.props.stories[newGroupId].user)
+      }
     }
   }
 
   next = () => {
-    if (this.state.currentId < this.props.stories.length - 1) {
+    const stories = this.props.stories[this.state.currentGroupId].stories;
+
+    if (this.state.currentStoryId < stories.length - 1) {
       this.setState({
-        currentId: this.state.currentId + 1,
+        currentStoryId: this.state.currentStoryId + 1,
         count: 0
       })
+    } else if (this.state.currentGroupId < this.props.stories.length - 1) {
+      const newGroupId = this.state.currentGroupId + 1
+      this.setState({
+        currentGroupId: newGroupId,
+        currentStoryId: 0,
+        count: 0
+      })
+      if (this.props.onGroupChange) {
+        this.props.onGroupChange(this.props.stories[newGroupId].user)
+      }
+    } else if (this.props.onEnd) {
+      this.props.onEnd();
     }
   }
 
   debouncePause = (e) => {
     e.preventDefault()
+    if (this.props.doPause) {
+      return
+    }
     this.mousedownId = setTimeout(() => {
       this.pause('pause')
     }, 200)
@@ -80,6 +143,9 @@ export default class Container extends React.Component {
 
   mouseUp = (e, type) => {
     e.preventDefault()
+    if (this.props.doPause) {
+      return
+    }
     this.mousedownId && clearTimeout(this.mousedownId)
     if (this.state.pause) {
       this.pause('play')
@@ -92,7 +158,51 @@ export default class Container extends React.Component {
     this.setState({ videoDuration: duration })
   }
 
+  togglePlayPause = () => {
+    if (this.state.pause) {
+      this.mousedownId && clearTimeout(this.mousedownId)
+      this.pause('play')
+    } else if (!this.state.pause) {
+      this.mousedownId = setTimeout(() => {
+        this.pause('pause')
+      }, 200)
+    }
+  }
+
+  mustPause = () => {
+    if (!this.state.pause) {
+      this.mousedownId = setTimeout(() => {
+        this.pause('pause')
+      }, 200)
+    }
+  }
+
+  mustPlay = () => {
+    if (this.state.pause) {
+      this.mousedownId && clearTimeout(this.mousedownId)
+      this.pause('play')
+    }
+  }
+
+  toggleMuteUnmute = () => {
+    this.setState({
+      muted: !this.state.muted
+    })
+  }
+
   render() {
+    const stories = this.props.stories[this.state.currentGroupId].stories;
+
+    let playPauseBtnSrc = pausePng;
+    if (this.state.pause) {
+      playPauseBtnSrc = playPng;
+    }
+
+    let muteUnmuteBtnSrc = unmutedPng;
+    if (this.state.muted) {
+      muteUnmuteBtnSrc = mutedPng;
+    }
+
     return (
       <div style={{...styles.container, ...{width: this.width, height: this.height}}}>
         <ProgressArray
@@ -100,26 +210,40 @@ export default class Container extends React.Component {
           pause={this.state.pause}
           bufferAction={this.state.bufferAction}
           videoDuration={this.state.videoDuration}
-          length={this.props.stories.map((s, i) => i)}
+          length={stories.map((s, i) => i)}
           defaultInterval={this.defaultInterval}
-          currentStory={this.props.stories[this.state.currentId]}
-          progress={{id: this.state.currentId, completed: this.state.count / ((this.props.stories[this.state.currentId] && this.props.stories[this.state.currentId].duration) || this.defaultInterval)}}
+          currentStory={stories[this.state.currentStoryId]}
+          progress={{id: this.state.currentStoryId, completed: this.state.count / ((stories[this.state.currentStoryId] && stories[this.state.currentStoryId].duration) || this.defaultInterval)}}
         />
         <Story
           action={this.pause}
           bufferAction={this.state.bufferAction}
           height={this.height}
           playState={this.state.pause}
+          mutedState={this.state.muted}
           width={this.width}
-          story={this.props.stories[this.state.currentId]}
+          story={stories[this.state.currentStoryId]}
           loader={this.props.loader}
-          header={this.props.header}
           getVideoDuration={this.getVideoDuration}
+          onStoryView={this.props.onStoryView}
+          onStoryRender={this.props.onStoryRender}
         />
         <div style={styles.overlay}>
           <div style={{width: this.width / 2, zIndex: 999}} onTouchStart={this.debouncePause} onTouchEnd={e => this.mouseUp(e, 'previous')} onMouseDown={this.debouncePause} onMouseUp={(e) => this.mouseUp(e, 'previous')} />
           <div style={{width: this.width / 2, zIndex: 999}} onTouchStart={this.debouncePause} onTouchEnd={e => this.mouseUp(e, 'next')} onMouseDown={this.debouncePause} onMouseUp={(e) => this.mouseUp(e, 'next')} />
         </div>
+        {this.props.showNextPrevButtons &&
+          <span className={style.nextBtn} onTouchStart={this.debouncePause} onTouchEnd={e => this.mouseUp(e, 'next')} onMouseDown={this.debouncePause} onMouseUp={(e) => this.mouseUp(e, 'next')}><img src={up} /></span>
+        }
+        {this.props.showNextPrevButtons &&
+          <span className={style.prevBtn} onTouchStart={this.debouncePause} onTouchEnd={e => this.mouseUp(e, 'previous')} onMouseDown={this.debouncePause} onMouseUp={(e) => this.mouseUp(e, 'previous')}><img src={up} /></span>
+        }
+        {!this.props.doPause &&
+          <span className={style.playPauseBtn} onClick={this.togglePlayPause}><img src={playPauseBtnSrc} /></span>
+        }
+        {!this.props.doPause &&
+          <span className={style.muteUnmuteBtn} onClick={this.toggleMuteUnmute}><img src={muteUnmuteBtnSrc} /></span>
+        }
       </div>
     )
   }
@@ -136,7 +260,8 @@ const styles = {
     position: 'absolute',
     height: 'inherit',
     width: 'inherit',
-    display: 'flex'
+    display: 'flex',
+    top: '70px'
   },
   left: {
   },
@@ -150,5 +275,12 @@ Container.propTypes = {
   width: PropTypes.number,
   height: PropTypes.number,
   loader: PropTypes.element,
-  header: PropTypes.element
+  showNextPrevButtons: PropTypes.bool,
+  onGroupChange: PropTypes.func,
+  onEnd: PropTypes.func,
+  startingGroupIndex: PropTypes.number,
+  startingStoryIndex: PropTypes.number,
+  doPause: PropTypes.bool,
+  onStoryView: PropTypes.func,
+  onStoryRender: PropTypes.func
 }

@@ -21,7 +21,7 @@ export default class Progress extends React.PureComponent {
   static getDerivedStateFromProps(props, state) {
     let current = props.currentStory
     if (typeof current === 'object') {
-      if (current.type && props.videoDuration) return { duration: props.videoDuration * 1000 }
+      if (current.type && current.type === 'video' && props.videoDuration) return { duration: props.videoDuration * 1000 }
       if (current.duration) return { duration: current.duration }
       return { duration: props.defaultInterval }
     } else {
@@ -50,7 +50,7 @@ export default class Progress extends React.PureComponent {
         break
     }
     return (
-      <div className={style.autoHide} style={{...styles.progress, ...{width: `${this.props.width * 100}%`, opacity: this.props.pause && !this.props.bufferAction ? 0 : 1}}}>
+      <div className={style.autoHide} style={{...styles.progress, ...{width: `${this.props.width * 100}%`, opacity: 1}}}>
         <div ref={r => { this.inner = r }} className={style.inner} style={innerStyle} /* style={{...styles.overlay, width: `${this.props.completed * 100}%`}} */ />
       </div>
     )

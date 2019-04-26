@@ -4,25 +4,20 @@ import PropTypes from 'prop-types'
 
 export default class ReactInstaStories extends Component {
   componentDidMount() {
-    this.props.stories.map(s => {
-      let i = new Image()
-      if (!(typeof s === 'object' && s.type === 'video')) {
-        i.src = typeof s === 'object' ? s.url : s
-      }
+    this.props.stories.map(g => {
+      g.stories.map(s => {
+        let i = new Image()
+        if (s.type === 'image') {
+          i.src = s.url
+        }
+      })
     })
   }
 
   render() {
     return (
       <div>
-        <Container
-          stories={this.props.stories}
-          defaultInterval={this.props.defaultInterval}
-          width={this.props.width}
-          height={this.props.height}
-          loader={this.props.loader}
-          header={this.props.header}
-        />
+        <Container {...this.props}/>
       </div>
     )
   }
@@ -34,5 +29,12 @@ ReactInstaStories.propTypes = {
   width: PropTypes.number,
   height: PropTypes.number,
   loader: PropTypes.element,
-  header: PropTypes.element
+  showNextPrevButtons: PropTypes.bool,
+  onGroupChange: PropTypes.func,
+  onEnd: PropTypes.func,
+  startingGroupIndex: PropTypes.number,
+  startingStoryIndex: PropTypes.number,
+  doPause: PropTypes.bool,
+  onStoryView: PropTypes.func,
+  onStoryRender: PropTypes.func
 }
