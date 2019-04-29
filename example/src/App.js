@@ -51,7 +51,7 @@ export default class App extends Component {
         "group_id":"5a86f706ed30b9234fcf61e0",
         "stories":[
           {
-            "id":"5ca6391e0cb59b3bc18cdff2",
+            "id":"5ca6391e0cb59b3bc18cdff1",
             "url":"https://img.glyphs.co/img?src=aHR0cHM6Ly9zMy5tZWRpYWxvb3QuY29tL3Jlc291cmNlcy9Db21pbmdfU29vbl9UZW1wbGF0ZV9QcmV2aWV3MS5qcGc&q=90&enlarge=true&h=1036&w=1600",
             "type":"image",
             "caption":"ok",
@@ -63,7 +63,7 @@ export default class App extends Component {
         "user":{}
       },
       {
-        "group_id":"5a86f706ed30b9234fcf61e0",
+        "group_id":"5a86f706ed30b9234fcf61e1",
         "stories":[
           {
             "seeMore":<SeeMore onFocus={this.onFocusInput} onBlur={this.onBlurInput} />,

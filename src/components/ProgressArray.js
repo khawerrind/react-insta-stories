@@ -8,7 +8,7 @@ export default class ProgressArray extends React.Component {
       <div style={styles.progressArr}>
         {this.props.length.map((i, index) =>
           <Progress
-            key={index}
+            key={`story_progress_${this.props.currentStory.id}_${index}`}
             width={1 / this.props.length.length}
             next={this.props.next}
             defaultInterval={this.props.defaultInterval}
