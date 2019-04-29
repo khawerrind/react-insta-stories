@@ -87,8 +87,8 @@ export default class App extends Component {
           {
             "seeMore":<SeeMore onFocus={this.onFocusInput} onBlur={this.onBlurInput} />,
             "id":"5ca6391e0cb59b3bc18cdff4",
-            "url":"https://res.cloudinary.com/css-tricks/image/upload/v1554322762/woo_scz9a9.png",
-            "type":"image",
+            "url":"https://s3.amazonaws.com/plunk-development-uploads/channels/add_story/5cc73a7d957b0b6b92870213.mp4",
+            "type":"video",
             "caption":"ok",
             "backgroundColor":"#c69ecc",
             "viewed":false,
@@ -108,7 +108,7 @@ export default class App extends Component {
             showNextPrevButtons={true}
             onGroupChange={this.onGroupChange}
             onEnd={this.onEnd}
-            startingGroupIndex={0}
+            startingGroupIndex={1}
             startingStoryIndex={0}
             doPause={this.state.doPause}
             onStoryView={this.onStoryView}

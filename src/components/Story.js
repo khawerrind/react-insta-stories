@@ -34,6 +34,14 @@ export default class Story extends React.Component {
           }, 0)
           this.props.action('pause', true)
         }
+      } else {
+        if (this.vid && this.vid.readyState !== 4) {
+          this.pauseId && clearTimeout(this.pauseId)
+          this.pauseId = setTimeout(() => {
+            this.setState({loaded: false})
+          }, 0)
+          this.props.action('pause', true)
+        }
       }
       this.vid && this.vid.addEventListener('waiting', () => {
         this.props.action('pause', true)
