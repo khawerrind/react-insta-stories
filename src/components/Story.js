@@ -24,8 +24,16 @@ export default class Story extends React.Component {
       }
       if (this.props.story.type === 'text') {
         this.imageLoaded()
-      } else {
-        this.props.action('pause', true)
+      } else if (this.props.story.type === 'image') {
+        let objImg = new Image();
+        objImg.src = this.props.story.url;
+        if (!objImg.complete) {
+          this.pauseId && clearTimeout(this.pauseId)
+          this.pauseId = setTimeout(() => {
+            this.setState({loaded: false})
+          }, 0)
+          this.props.action('pause', true)
+        }
       }
       this.vid && this.vid.addEventListener('waiting', () => {
         this.props.action('pause', true)
@@ -44,6 +52,7 @@ export default class Story extends React.Component {
   }
   imageLoaded = () => {
     try {
+      if (this.pauseId) clearTimeout(this.pauseId)
       this.setState({loaded: true})
       this.props.action('play', true)
       if (this.props.onStoryView) {
@@ -76,6 +85,7 @@ export default class Story extends React.Component {
             style={styles.storyContent}
             src={source}
             onLoad={this.imageLoaded}
+            key={`story_image_${this.props.story.id}`}
           />
         }
         {type === 'video' &&
